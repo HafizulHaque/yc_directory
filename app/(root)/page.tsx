@@ -1,44 +1,15 @@
 import SearchForm from "@/components/SearchForm";
-import StartupCard from "@/components/StartupCard";
+import StartupCard, { StartupCardType } from "@/components/StartupCard";
+import { sanityFetch, SanityLive } from "@/sanity/lib/live";
+import { STARTUP_QUERY } from "@/sanity/lib/queries";
+
 
 export default async function Home({ searchParams }: {
   searchParams: Promise<{ query?: string }>
 }) {
 
   let query = (await searchParams).query
-
-  const posts = [
-    {
-      _id: 1,
-      _createdAt: new Date(),
-      views: 55,
-      author: { _id: 1, name: 'Hafizul Haque'},
-      image: "https://artfiles.alphacoders.com/306/thumb-1920-30632.jpg",
-      category: 'Robots',
-      title: 'We Robots',
-      description: 'Some awesome descriptiion about robots'
-    },
-    {
-      _id: 2,
-      _createdAt: new Date(),
-      views: 55,
-      author: { _id: 1, name: 'Hafizul Haque'},
-      image: "https://artfiles.alphacoders.com/306/thumb-1920-30632.jpg",
-      category: 'Robots',
-      title: 'We Robots',
-      description: 'Some awesome descriptiion about robots'
-    },
-    {
-      _id: 3,
-      _createdAt: new Date(),
-      views: 55,
-      author: { _id: 1, name: 'Hafizul Haque'},
-      image: "https://artfiles.alphacoders.com/306/thumb-1920-30632.jpg",
-      category: 'Robots',
-      title: 'We Robots',
-      description: 'Some awesome descriptiion about robots'
-    },
-  ]
+  const { data: posts } = (await sanityFetch({query: STARTUP_QUERY})) as unknown as { data: Array<StartupCardType> } 
 
   return (
     <>
@@ -54,14 +25,13 @@ export default async function Home({ searchParams }: {
         </p>
         <ul className="mt-7 card_grid">
           {posts?.length > 0 ? (
-            posts.map((post: StartupCardType, index: number) => (
-              <StartupCard key={post?._id} post={post}/>
-            )) 
+            posts.map((post: StartupCardType, index: number) => <StartupCard key={index} post={post}/>) 
           ) : (
             <p className="no-results">No Startups found</p>
           )}
         </ul>
       </section>
+      <SanityLive/>
     </>
   );
 }
